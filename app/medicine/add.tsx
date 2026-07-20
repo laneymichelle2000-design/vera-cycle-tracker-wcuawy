@@ -8,15 +8,17 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Switch,
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { Plus, X, Clock, ChevronDown } from 'lucide-react-native';
+import { Plus, X, Clock, ChevronDown, Bell } from 'lucide-react-native';
 import { COLORS, DARK_COLORS } from '@/constants/AppColors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
 import { getMedicines, saveMedicines } from '@/utils/storage';
 import { Medicine } from '@/types/models';
 import { formatTime } from '@/utils/dateHelpers';
+import { scheduleMedicineNotifications, cancelMedicineNotifications, requestNotificationPermissions } from '@/utils/notifications';
 
 const MEDICINE_TYPES: { key: Medicine['type']; label: string }[] = [
   { key: 'pill', label: 'Pill' },
@@ -53,6 +55,7 @@ export default function AddMedicineScreen() {
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [editingTimeIndex, setEditingTimeIndex] = useState<number | null>(null);
   const [nameError, setNameError] = useState('');
+  const [remindersEnabled, setRemindersEnabled] = useState(true);
 
   const nameRef = useRef<TextInput>(null);
 
@@ -76,6 +79,7 @@ export default function AddMedicineScreen() {
         setDosage(med.dosage);
         setTimes(med.times.length > 0 ? med.times : ['08:00']);
         setNotes(med.notes);
+        setRemindersEnabled(med.active);
       }
     } catch (e) {
       console.error('[AddMedicine] Failed to load medicine:', e);
@@ -83,7 +87,7 @@ export default function AddMedicineScreen() {
   };
 
   const handleSave = async () => {
-    console.log('[AddMedicine] Save button pressed, name:', name, 'type:', type);
+    console.log('[AddMedicine] Save button pressed, name:', name, 'type:', type, 'remindersEnabled:', remindersEnabled);
     if (!name.trim()) {
       setNameError('Please enter a medicine name');
       return;
@@ -94,13 +98,22 @@ export default function AddMedicineScreen() {
       const meds = await getMedicines();
 
       if (id) {
-        const updated = meds.map((m) =>
-          m.id === id
-            ? { ...m, name: name.trim(), type, color, dosage: dosage.trim(), times, notes: notes.trim() }
-            : m
-        );
+        const updatedMed: Medicine = {
+          ...meds.find((m) => m.id === id)!,
+          name: name.trim(),
+          type,
+          color,
+          dosage: dosage.trim(),
+          times,
+          notes: notes.trim(),
+          active: remindersEnabled,
+        };
+        const updated = meds.map((m) => m.id === id ? updatedMed : m);
         await saveMedicines(updated);
         console.log('[AddMedicine] Medicine updated successfully:', name);
+        await requestNotificationPermissions();
+        console.log('[AddMedicine] Scheduling notifications for updated medicine:', updatedMed.name);
+        await scheduleMedicineNotifications(updatedMed);
       } else {
         const newMed: Medicine = {
           id: `med_${Date.now()}`,
@@ -110,11 +123,14 @@ export default function AddMedicineScreen() {
           dosage: dosage.trim() || '1 dose',
           times,
           notes: notes.trim(),
-          active: true,
+          active: remindersEnabled,
           createdAt: new Date().toISOString(),
         };
         await saveMedicines([...meds, newMed]);
         console.log('[AddMedicine] New medicine saved:', newMed.name, 'id:', newMed.id);
+        await requestNotificationPermissions();
+        console.log('[AddMedicine] Scheduling notifications for new medicine:', newMed.name);
+        await scheduleMedicineNotifications(newMed);
       }
 
       router.back();
@@ -391,6 +407,49 @@ export default function AddMedicineScreen() {
               </Text>
             </AnimatedPressable>
           </View>
+          {remindersEnabled ? (
+            <Text style={{ fontFamily: 'Nunito-Regular', fontSize: 12, color: C.textTertiary, marginTop: 6 }}>
+              You'll get a daily notification at each time above
+            </Text>
+          ) : null}
+        </View>
+
+        {/* Daily reminders toggle */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            backgroundColor: C.surfaceSecondary,
+            borderRadius: 12,
+            paddingHorizontal: 14,
+            paddingVertical: 14,
+          }}
+        >
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+            <Bell size={18} color={remindersEnabled ? C.primary : C.textTertiary} />
+            <View>
+              <Text style={{ fontFamily: 'Nunito-SemiBold', fontSize: 15, color: C.text }}>
+                Daily reminders
+              </Text>
+              <Text style={{ fontFamily: 'Nunito-Regular', fontSize: 12, color: C.textSecondary, marginTop: 1 }}>
+                Get notified at your scheduled times
+              </Text>
+            </View>
+          </View>
+          <Switch
+            value={remindersEnabled}
+            onValueChange={(val) => {
+              console.log('[AddMedicine] Reminders toggle changed to:', val);
+              setRemindersEnabled(val);
+              if (!val && id) {
+                console.log('[AddMedicine] Cancelling notifications for medicine id:', id);
+                cancelMedicineNotifications(id);
+              }
+            }}
+            trackColor={{ false: C.border, true: C.primary + '80' }}
+            thumbColor={remindersEnabled ? C.primary : C.textTertiary}
+          />
         </View>
 
         {/* Notes */}

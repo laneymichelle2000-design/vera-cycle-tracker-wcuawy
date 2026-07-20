@@ -11,7 +11,7 @@ import {
   UIManager,
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Plus, Check, Pill, SkipForward } from 'lucide-react-native';
+import { Plus, Check, Pill, SkipForward, Bell } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS, DARK_COLORS } from '@/constants/AppColors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
@@ -19,6 +19,7 @@ import { MedicineCardSkeleton } from '@/components/SkeletonLoader';
 import { getMedicines, getDoseLogs, saveDoseLogs, getCycleEntries, saveCycleEntries } from '@/utils/storage';
 import { today, formatDateLong, formatTime, getGreeting } from '@/utils/dateHelpers';
 import { Medicine, DoseLog, CycleEntry } from '@/types/models';
+import { getScheduledNotificationIds } from '@/utils/notifications';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -79,6 +80,7 @@ export default function TodayScreen() {
   const [loading, setLoading] = useState(true);
   const [medicinesWithLogs, setMedicinesWithLogs] = useState<MedicineWithLog[]>([]);
   const [cycleEntry, setCycleEntry] = useState<CycleEntry | null>(null);
+  const [scheduledIds, setScheduledIds] = useState<string[]>([]);
 
   const todayStr = today();
   const greeting = getGreeting();
@@ -87,11 +89,14 @@ export default function TodayScreen() {
   const loadData = useCallback(async () => {
     console.log('[Today] Loading data for', todayStr);
     try {
-      const [medicines, logs, cycleEntries] = await Promise.all([
+      const [medicines, logs, cycleEntries, notifIds] = await Promise.all([
         getMedicines(),
         getDoseLogs(),
         getCycleEntries(),
+        getScheduledNotificationIds(),
       ]);
+      console.log('[Today] Fetched scheduled notification IDs:', notifIds);
+      setScheduledIds(notifIds);
 
       const activeMeds = medicines.filter((m) => m.active);
       const todayLogs = logs.filter((l) => l.date === todayStr);
@@ -401,17 +406,21 @@ export default function TodayScreen() {
                 </AnimatedPressable>
               </View>
             ) : (
-              medicinesWithLogs.map((item, idx) => (
-                <MedicineCard
-                  key={item.medicine.id}
-                  item={item}
-                  index={idx}
-                  C={C}
-                  onTaken={() => handleMarkTaken(item.medicine, item.log)}
-                  onSkip={() => handleSkip(item.medicine)}
-                  onEdit={() => handleEditMedicine(item.medicine)}
-                />
-              ))
+              medicinesWithLogs.map((item, idx) => {
+                const hasNotification = scheduledIds.some(sid => sid.startsWith(item.medicine.id + '_'));
+                return (
+                  <MedicineCard
+                    key={item.medicine.id}
+                    item={item}
+                    index={idx}
+                    C={C}
+                    hasNotification={hasNotification}
+                    onTaken={() => handleMarkTaken(item.medicine, item.log)}
+                    onSkip={() => handleSkip(item.medicine)}
+                    onEdit={() => handleEditMedicine(item.medicine)}
+                  />
+                );
+              })
             )}
           </View>
         </AnimatedListItem>
@@ -571,12 +580,13 @@ interface MedicineCardProps {
   item: MedicineWithLog;
   index: number;
   C: typeof COLORS;
+  hasNotification: boolean;
   onTaken: () => void;
   onSkip: () => void;
   onEdit: () => void;
 }
 
-function MedicineCard({ item, index, C, onTaken, onSkip, onEdit }: MedicineCardProps) {
+function MedicineCard({ item, index, C, hasNotification, onTaken, onSkip, onEdit }: MedicineCardProps) {
   const { medicine, log } = item;
   const isTaken = log?.status === 'taken';
   const isSkipped = log?.status === 'skipped';
@@ -652,9 +662,14 @@ function MedicineCard({ item, index, C, onTaken, onSkip, onEdit }: MedicineCardP
 
         {/* Info */}
         <View style={{ flex: 1 }}>
-          <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 16, color: C.text }} numberOfLines={1}>
-            {medicine.name}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+            <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 16, color: C.text }} numberOfLines={1}>
+              {medicine.name}
+            </Text>
+            {hasNotification ? (
+              <Bell size={12} color={C.primary} style={{ opacity: 0.7 }} />
+            ) : null}
+          </View>
           <Text style={{ fontFamily: 'Nunito-Regular', fontSize: 13, color: C.textSecondary, marginTop: 2 }}>
             {medicine.dosage}
             {timeLabel ? ` · ${timeLabel}` : ''}

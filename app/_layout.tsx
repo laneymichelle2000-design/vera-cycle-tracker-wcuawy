@@ -1,7 +1,7 @@
 import "react-native-reanimated";
 import React, { useEffect } from "react";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { SystemBars } from "react-native-edge-to-edge";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -14,9 +14,12 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
+import * as Notifications from "expo-notifications";
 import { WidgetProvider } from "@/contexts/WidgetContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { seedIfNeeded } from "@/utils/seedData";
+import { requestNotificationPermissions, rescheduleAllMedicines } from "@/utils/notifications";
+import { getMedicines } from "@/utils/storage";
 
 const DevErrorBoundary = __DEV__
   ? ErrorBoundary
@@ -30,6 +33,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
   const [loaded] = useFonts({
     "Nunito-Regular": require("../assets/fonts/Nunito-Regular.ttf"),
     "Nunito-Medium": require("../assets/fonts/Nunito-Medium.ttf"),
@@ -42,8 +46,27 @@ export default function RootLayout() {
     if (loaded) {
       seedIfNeeded();
       SplashScreen.hideAsync();
+
+      // Request notification permissions and resync all alarms on launch
+      (async () => {
+        console.log('[Layout] Requesting notification permissions on app launch');
+        await requestNotificationPermissions();
+        console.log('[Layout] Fetching medicines to resync notification alarms');
+        const medicines = await getMedicines();
+        console.log('[Layout] Rescheduling notifications for', medicines.length, 'medicines');
+        await rescheduleAllMedicines(medicines);
+      })();
     }
   }, [loaded]);
+
+  useEffect(() => {
+    // Navigate to today tab when a notification is tapped
+    const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log('[Layout] Notification tapped, identifier:', response.notification.request.identifier, 'data:', response.notification.request.content.data);
+      router.push('/(tabs)/(today)');
+    });
+    return () => subscription.remove();
+  }, [router]);
 
   const CustomDefaultTheme: Theme = {
     ...DefaultTheme,
