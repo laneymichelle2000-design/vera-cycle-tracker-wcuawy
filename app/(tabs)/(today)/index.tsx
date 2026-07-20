@@ -11,7 +11,7 @@ import {
   UIManager,
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Plus, Check, Pill, SkipForward, Bell } from 'lucide-react-native';
+import { Plus, Check, Pill, SkipForward, Bell, Sparkles } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS, DARK_COLORS } from '@/constants/AppColors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
@@ -20,6 +20,7 @@ import { getMedicines, getDoseLogs, saveDoseLogs, getCycleEntries, saveCycleEntr
 import { today, formatDateLong, formatTime, getGreeting } from '@/utils/dateHelpers';
 import { Medicine, DoseLog, CycleEntry } from '@/types/models';
 import { getScheduledNotificationIds } from '@/utils/notifications';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -76,6 +77,7 @@ export default function TodayScreen() {
   const colorScheme = useColorScheme();
   const C = colorScheme === 'dark' ? DARK_COLORS : COLORS;
   const router = useRouter();
+  const { isSubscribed } = useSubscription();
 
   const [loading, setLoading] = useState(true);
   const [medicinesWithLogs, setMedicinesWithLogs] = useState<MedicineWithLog[]>([]);
@@ -285,6 +287,11 @@ export default function TodayScreen() {
     router.push('/medicine/add');
   };
 
+  const handleGoPremium = () => {
+    console.log('[Today] Go Premium button pressed');
+    router.push('/paywall');
+  };
+
   const handleEditMedicine = (med: Medicine) => {
     console.log('[Today] Edit medicine pressed for:', med.name);
     router.push({ pathname: '/medicine/add', params: { id: med.id } });
@@ -324,8 +331,51 @@ export default function TodayScreen() {
           </View>
         </AnimatedListItem>
 
+        {/* Go Premium Banner — only shown to non-subscribers */}
+        {!isSubscribed && (
+          <AnimatedListItem index={1}>
+            <AnimatedPressable
+              onPress={handleGoPremium}
+              style={{
+                backgroundColor: C.primaryMuted,
+                borderRadius: 16,
+                padding: 16,
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: 12,
+                borderWidth: 1,
+                borderColor: C.primary + '30',
+              }}
+            >
+              <View
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  backgroundColor: C.primary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Sparkles size={20} color="#FFFFFF" />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 15, color: C.primary }}>
+                  Unlock Vera Pro
+                </Text>
+                <Text style={{ fontFamily: 'Nunito-Regular', fontSize: 13, color: C.textSecondary, marginTop: 2 }}>
+                  Analytics, exports & unlimited medicines
+                </Text>
+              </View>
+              <Text style={{ fontFamily: 'Nunito-ExtraBold', fontSize: 13, color: C.primary }}>
+                ✦ PRO
+              </Text>
+            </AnimatedPressable>
+          </AnimatedListItem>
+        )}
+
         {/* Medicines Section */}
-        <AnimatedListItem index={1}>
+        <AnimatedListItem index={isSubscribed ? 1 : 2}>
           <View>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
               <View>
@@ -426,7 +476,7 @@ export default function TodayScreen() {
         </AnimatedListItem>
 
         {/* Cycle Section */}
-        <AnimatedListItem index={2}>
+        <AnimatedListItem index={isSubscribed ? 2 : 3}>
           <View
             style={{
               backgroundColor: C.surface,

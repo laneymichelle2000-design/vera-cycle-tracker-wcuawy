@@ -3,8 +3,11 @@ import { View, useColorScheme } from 'react-native';
 import { Tabs } from 'expo-router';
 import FloatingTabBar from '@/components/FloatingTabBar';
 import { COLORS, DARK_COLORS } from '@/constants/AppColors';
+import { useSubscriptionGuard } from "@/hooks/useSubscriptionGuard";
 
 export default function TabLayout() {
+  useSubscriptionGuard();
+
   const colorScheme = useColorScheme();
   const C = colorScheme === 'dark' ? DARK_COLORS : COLORS;
 

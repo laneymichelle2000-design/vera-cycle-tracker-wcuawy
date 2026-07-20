@@ -1,7 +1,7 @@
 import "react-native-reanimated";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useFonts } from "expo-font";
-import { Stack, useRouter } from "expo-router";
+import { Stack, useRouter, Redirect, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { SystemBars } from "react-native-edge-to-edge";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
@@ -16,10 +16,12 @@ import {
 import { StatusBar } from "expo-status-bar";
 import * as Notifications from "expo-notifications";
 import { WidgetProvider } from "@/contexts/WidgetContext";
+import { SubscriptionProvider, useSubscription } from "@/contexts/SubscriptionContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { seedIfNeeded } from "@/utils/seedData";
 import { requestNotificationPermissions, rescheduleAllMedicines } from "@/utils/notifications";
 import { getMedicines } from "@/utils/storage";
+import { isOnboardingComplete } from "@/utils/onboardingStorage";
 
 const DevErrorBoundary = __DEV__
   ? ErrorBoundary
@@ -31,7 +33,50 @@ export const unstable_settings = {
   initialRouteName: "(tabs)",
 };
 
+
+function SubscriptionRedirect() {
+  const { isSubscribed, loading } = useSubscription();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (loading) return;
+    const onOnboarding = pathname.startsWith("/onboarding");
+    if (onOnboarding) return;
+
+    let cancelled = false;
+    isOnboardingComplete().then((done) => {
+      if (cancelled) return;
+      if (!done) return;
+      const onPaywall = pathname === "/paywall";
+      if (onPaywall) return;
+      if (!isSubscribed) {
+        router.replace("/paywall");
+      }
+    }).catch(() => {
+      if (cancelled) return;
+      const onPaywall = pathname === "/paywall";
+      if (onPaywall) return;
+      if (!isSubscribed) {
+        router.replace("/paywall");
+      }
+    });
+    return () => { cancelled = true; };
+  }, [isSubscribed, loading, pathname]);
+
+  return null;
+}
+
 export default function RootLayout() {
+  const [onboardingComplete, setOnboardingComplete] = useState<boolean | null>(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    isOnboardingComplete().then((complete) => {
+      setOnboardingComplete(complete);
+    });
+  }, [pathname]);
+
   const colorScheme = useColorScheme();
   const router = useRouter();
   const [loaded] = useFonts({
@@ -93,16 +138,23 @@ export default function RootLayout() {
     },
   };
 
-  if (!loaded) return null;
+  if (!loaded || onboardingComplete === null) return null;
 
   return (
-    <DevErrorBoundary>
+    <SubscriptionProvider>
+          <SubscriptionRedirect />
+      <DevErrorBoundary>
       <StatusBar style="auto" animated />
       <ThemeProvider value={colorScheme === "dark" ? CustomDarkTheme : CustomDefaultTheme}>
         <SafeAreaProvider>
           <WidgetProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
+              {onboardingComplete === false && pathname !== "/auth" && pathname !== "/paywall" && pathname !== "/auth-popup" && pathname !== "/auth-callback" && <Redirect href="/onboarding" />}
+
               <Stack>
+                <Stack.Screen name="onboarding" options={{ headerShown: false }} />
+                <Stack.Screen name="paywall" options={{ headerShown: false, presentation: 'modal' }} />
+
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen
                   name="medicine/add"
@@ -129,5 +181,6 @@ export default function RootLayout() {
         </SafeAreaProvider>
       </ThemeProvider>
     </DevErrorBoundary>
+    </SubscriptionProvider>
   );
 }

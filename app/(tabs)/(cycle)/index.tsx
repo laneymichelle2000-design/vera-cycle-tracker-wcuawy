@@ -171,7 +171,7 @@ export default function CycleScreen() {
   const monthEntries = cycleEntries.filter((e) => e.date.startsWith(monthStr));
   const symptomCounts: Record<string, number> = {};
   monthEntries.forEach((e) => {
-    e.symptoms.forEach((s) => {
+    (e.symptoms ?? []).forEach((s) => {
       symptomCounts[s] = (symptomCounts[s] || 0) + 1;
     });
   });
@@ -437,13 +437,13 @@ export default function CycleScreen() {
                     </Text>
                   </View>
 
-                  {selectedEntry.symptoms.length > 0 && (
+                  {(selectedEntry.symptoms ?? []).length > 0 && (
                     <View>
                       <Text style={{ fontFamily: 'Nunito-SemiBold', fontSize: 13, color: C.textSecondary, marginBottom: 8 }}>
                         Symptoms
                       </Text>
                       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
-                        {selectedEntry.symptoms.map((s) => (
+                        {(selectedEntry.symptoms ?? []).map((s) => (
                           <View
                             key={s}
                             style={{
