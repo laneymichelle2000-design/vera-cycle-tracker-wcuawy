@@ -34,11 +34,14 @@
       "expo-router",
       "expo-web-browser",
       "expo-secure-store",
-      ["expo-notifications", {
-        "icon": "./assets/images/icon.png",
-        "color": "#D4607A",
-        "sounds": []
-      }]
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/app-icon-gmt.png",
+          "color": "#D4607A",
+          "sounds": []
+        }
+      ]
     ],
     "scheme": "veracycle",
     "experiments": {
