@@ -278,7 +278,11 @@ export default function HistoryScreen() {
           backgroundColor: C.primary,
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 4px 16px rgba(212,96,122,0.4)',
+          shadowColor: '#D4607A',
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.2,
+          shadowRadius: 12,
+          elevation: 6,
         }}
       >
         <Plus size={24} color="#FFFFFF" />

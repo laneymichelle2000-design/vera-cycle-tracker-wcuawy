@@ -57,6 +57,7 @@ export default function HomeScreen() {
       <ScrollView
         style={{ flex: 1, backgroundColor: C.background }}
         contentContainerStyle={styles.container}
+        contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
       >
         {/* Hero */}
@@ -125,18 +126,19 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 32,
-    fontWeight: "800",
+    fontFamily: 'Nunito-ExtraBold',
     letterSpacing: -0.5,
     marginBottom: 6,
   },
   heroSubtitle: {
     fontSize: 15,
+    fontFamily: 'Nunito-Regular',
     textAlign: "center",
     lineHeight: 22,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "700",
+    fontFamily: 'Nunito-Bold',
     marginBottom: 14,
   },
   card: {
@@ -160,16 +162,18 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 15,
-    fontWeight: "700",
+    fontFamily: 'Nunito-Bold',
     marginBottom: 3,
   },
   cardDesc: {
     fontSize: 13,
+    fontFamily: 'Nunito-Regular',
     lineHeight: 18,
   },
   footer: {
     textAlign: "center",
     fontSize: 13,
+    fontFamily: 'Nunito-Regular',
     marginTop: 12,
   },
 });

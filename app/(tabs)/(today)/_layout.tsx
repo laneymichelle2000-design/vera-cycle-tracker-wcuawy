@@ -1,16 +1,17 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { Stack } from 'expo-router';
 
 export default function TodayLayout() {
   return (
     <Stack
       screenOptions={{
-        headerTransparent: true,
+        headerTransparent: Platform.OS === 'ios',
         headerShadowVisible: false,
         headerLargeTitleShadowVisible: false,
         headerLargeStyle: { backgroundColor: 'transparent' },
-        headerBlurEffect: 'none',
-        headerLargeTitle: true,
+        headerBlurEffect: Platform.OS === 'ios' ? 'none' : undefined,
+        headerLargeTitle: Platform.OS === 'ios',
         headerBackButtonDisplayMode: 'minimal',
       }}
     >

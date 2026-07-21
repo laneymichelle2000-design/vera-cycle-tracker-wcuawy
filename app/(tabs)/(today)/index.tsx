@@ -305,7 +305,7 @@ export default function TodayScreen() {
     <View style={{ flex: 1, backgroundColor: C.background }}>
       <ScrollView
         contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 120, gap: 24 }}
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 16, paddingBottom: 120, gap: 24 }}
         showsVerticalScrollIndicator={false}
       >
         {/* Greeting Card */}
@@ -315,8 +315,11 @@ export default function TodayScreen() {
               backgroundColor: C.primary,
               borderRadius: 20,
               padding: 20,
-              marginTop: 8,
-              boxShadow: '0 4px 16px rgba(212,96,122,0.25)',
+              shadowColor: '#D4607A',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.2,
+              shadowRadius: 12,
+              elevation: 6,
             }}
           >
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
@@ -502,7 +505,11 @@ export default function TodayScreen() {
               padding: 20,
               borderWidth: 1,
               borderColor: C.border,
-              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.06,
+              shadowRadius: 4,
+              elevation: 2,
             }}
           >
             <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 18, color: C.text, marginBottom: 16 }}>
@@ -622,24 +629,6 @@ export default function TodayScreen() {
         </AnimatedListItem>
       </ScrollView>
 
-      {/* FAB */}
-      <AnimatedPressable
-        onPress={handleAddMedicine}
-        style={{
-          position: 'absolute',
-          bottom: 100,
-          right: 20,
-          width: 56,
-          height: 56,
-          borderRadius: 28,
-          backgroundColor: C.primary,
-          alignItems: 'center',
-          justifyContent: 'center',
-          boxShadow: '0 4px 16px rgba(212,96,122,0.4)',
-        }}
-      >
-        <Plus size={24} color="#FFFFFF" />
-      </AnimatedPressable>
     </View>
   );
 }
@@ -704,7 +693,11 @@ function MedicineCard({ item, index, C, hasNotification, onTaken, onSkip, onEdit
           flexDirection: 'row',
           alignItems: 'center',
           gap: 12,
-          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.06,
+          shadowRadius: 4,
+          elevation: 2,
         }}
       >
         {/* Pill dot */}

@@ -209,7 +209,11 @@ export default function CycleScreen() {
                   alignItems: 'center',
                   borderWidth: 1,
                   borderColor: C.border,
-                  boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.06,
+                  shadowRadius: 4,
+                  elevation: 2,
                 }}
               >
                 <Text style={{ fontFamily: 'Nunito-ExtraBold', fontSize: 18, color: C.primary }}>
@@ -232,7 +236,11 @@ export default function CycleScreen() {
               padding: 16,
               borderWidth: 1,
               borderColor: C.border,
-              boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.06,
+              shadowRadius: 4,
+              elevation: 2,
             }}
           >
             {/* Month nav */}
@@ -346,7 +354,11 @@ export default function CycleScreen() {
                 padding: 20,
                 borderWidth: 1,
                 borderColor: C.border,
-                boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 1 },
+                shadowOpacity: 0.06,
+                shadowRadius: 4,
+                elevation: 2,
               }}
             >
               <Text style={{ fontFamily: 'Nunito-Bold', fontSize: 18, color: C.text, marginBottom: 16 }}>
