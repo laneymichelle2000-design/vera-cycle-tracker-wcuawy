@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "Vera Cycle",
-    "slug": "vera-cycle",
-    "version": "1.0.0",
+    "slug": "vera-cycle-tracker-wcuawy",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon-gmt.png",
     "userInterfaceStyle": "automatic",
@@ -23,7 +23,8 @@
         "foregroundImage": "./assets/images/app-icon-gmt.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.veracycle.app"
+      "package": "com.veracycle.app",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/images/newly.png",

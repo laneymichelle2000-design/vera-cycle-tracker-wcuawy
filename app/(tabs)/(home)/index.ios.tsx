@@ -1,45 +1,167 @@
 import React from "react";
-import { Stack } from "expo-router";
-import { StyleSheet, View, Text } from "react-native";
-import { useTheme } from "@react-navigation/native";
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  useColorScheme,
+} from "react-native";
+import { Stack, useRouter } from "expo-router";
+import { Pill, CalendarDays, ClipboardList, Bell } from "lucide-react-native";
+import { COLORS, DARK_COLORS } from "@/constants/AppColors";
+import { AnimatedPressable } from "@/components/AnimatedPressable";
 
 export default function HomeScreen() {
-  const theme = useTheme();
+  const colorScheme = useColorScheme();
+  const C = colorScheme === "dark" ? DARK_COLORS : COLORS;
+  const router = useRouter();
+
+  const features = [
+    {
+      icon: <Pill size={28} color={C.primary} />,
+      title: "Medicine Tracker",
+      description: "Log your daily pills and birth control on time, every time.",
+      route: "/(tabs)/(today)" as const,
+    },
+    {
+      icon: <CalendarDays size={28} color={C.primary} />,
+      title: "Cycle Calendar",
+      description: "Track your flow, symptoms, and mood across your cycle.",
+      route: "/(tabs)/(cycle)" as const,
+    },
+    {
+      icon: <ClipboardList size={28} color={C.primary} />,
+      title: "Health History",
+      description: "Review your full dose and cycle history in one place.",
+      route: "/(tabs)/(history)" as const,
+    },
+    {
+      icon: <Bell size={28} color={C.primary} />,
+      title: "Smart Reminders",
+      description: "Get daily notifications so you never miss a dose.",
+      route: "/(tabs)/(today)" as const,
+    },
+  ];
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: "Building the app...",
-        }}
-      />
-      <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-        <Text style={[styles.title, { color: theme.colors.text }]}>
-          Welcome to Newly
+      <Stack.Screen options={{ title: "Vera Cycle", headerLargeTitle: true }} />
+      <ScrollView
+        style={{ flex: 1, backgroundColor: C.background }}
+        contentContainerStyle={styles.container}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Hero */}
+        <View style={[styles.hero, { backgroundColor: C.primaryMuted }]}>
+          <Text style={styles.heroEmoji}>🌸</Text>
+          <Text style={[styles.heroTitle, { color: C.primary }]}>
+            Vera Cycle
+          </Text>
+          <Text style={[styles.heroSubtitle, { color: C.textSecondary }]}>
+            Your personal medicine & cycle companion
+          </Text>
+        </View>
+
+        {/* Feature cards */}
+        <Text style={[styles.sectionTitle, { color: C.text }]}>
+          Everything you need
         </Text>
-        <Text style={[styles.subtitle, { color: theme.dark ? '#98989D' : '#666' }]}>
-          Your app is currently building...
+
+        {features.map((f, i) => (
+          <AnimatedPressable
+            key={i}
+            onPress={() => router.push(f.route)}
+            style={[
+              styles.card,
+              { backgroundColor: C.surface, borderColor: C.border },
+            ]}
+          >
+            <View style={[styles.iconWrap, { backgroundColor: C.primaryMuted }]}>
+              {f.icon}
+            </View>
+            <View style={styles.cardText}>
+              <Text style={[styles.cardTitle, { color: C.text }]}>
+                {f.title}
+              </Text>
+              <Text style={[styles.cardDesc, { color: C.textSecondary }]}>
+                {f.description}
+              </Text>
+            </View>
+          </AnimatedPressable>
+        ))}
+
+        <Text style={[styles.footer, { color: C.textTertiary }]}>
+          Vera Cycle — made for you 💕
         </Text>
-      </View>
+      </ScrollView>
     </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 120,
+  },
+  hero: {
+    borderRadius: 20,
+    alignItems: "center",
+    paddingVertical: 36,
     paddingHorizontal: 24,
+    marginBottom: 32,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
+  heroEmoji: {
+    fontSize: 48,
     marginBottom: 8,
-    textAlign: 'center',
   },
-  subtitle: {
-    fontSize: 16,
-    textAlign: 'center',
+  heroTitle: {
+    fontSize: 32,
+    fontWeight: "800",
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
+  heroSubtitle: {
+    fontSize: 15,
+    textAlign: "center",
+    lineHeight: 22,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 14,
+  },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderRadius: 16,
+    borderWidth: 1,
+    padding: 16,
+    marginBottom: 12,
+    gap: 14,
+  },
+  iconWrap: {
+    width: 52,
+    height: 52,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  cardText: {
+    flex: 1,
+  },
+  cardTitle: {
+    fontSize: 15,
+    fontWeight: "700",
+    marginBottom: 3,
+  },
+  cardDesc: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  footer: {
+    textAlign: "center",
+    fontSize: 13,
+    marginTop: 12,
   },
 });
