@@ -60,3 +60,7 @@ export async function getHealthNotes(): Promise<HealthNote[]> {
 export async function saveHealthNotes(notes: HealthNote[]): Promise<void> {
   await AsyncStorage.setItem(STORAGE_KEYS.HEALTH_NOTES, JSON.stringify(notes));
 }
+
+export async function deleteAllData(): Promise<void> {
+  await AsyncStorage.multiRemove(Object.values(STORAGE_KEYS));
+}

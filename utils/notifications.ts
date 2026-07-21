@@ -92,3 +92,9 @@ export async function getScheduledNotificationIds(): Promise<string[]> {
   console.log('[Notifications] Fetched scheduled notification IDs:', ids);
   return ids;
 }
+
+export async function cancelAllMedicineNotifications(): Promise<void> {
+  if (Platform.OS === 'web') return;
+  console.log('[Notifications] Cancelling all scheduled notifications');
+  await Notifications.cancelAllScheduledNotificationsAsync();
+}

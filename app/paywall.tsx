@@ -16,13 +16,16 @@ import {
   Alert,
   Platform,
   Dimensions,
+  Linking,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { PurchasesPackage } from "react-native-purchases";
-
 import { useSubscription } from "@/contexts/SubscriptionContext";
+
+const PRIVACY_POLICY_URL = "https://veracycle.app/privacy";
+const TERMS_OF_SERVICE_URL = "https://veracycle.app/terms";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 
@@ -353,6 +356,15 @@ export default function PaywallScreen() {
                   )}
                 </TouchableOpacity>
                 <Text style={styles.legalText}>Preview mode — purchases available in the mobile app</Text>
+                <View style={styles.legalLinks}>
+                  <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+                    <Text style={styles.legalLink}>Privacy Policy</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.legalLinkSep}>·</Text>
+                  <TouchableOpacity onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL)}>
+                    <Text style={styles.legalLink}>Terms of Service</Text>
+                  </TouchableOpacity>
+                </View>
               </>
             ) : (
               <>
@@ -391,6 +403,15 @@ export default function PaywallScreen() {
                   Subscription automatically renews unless canceled at least 24 hours
                   before the end of the current period.
                 </Text>
+                <View style={styles.legalLinks}>
+                  <TouchableOpacity onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}>
+                    <Text style={styles.legalLink}>Privacy Policy</Text>
+                  </TouchableOpacity>
+                  <Text style={styles.legalLinkSep}>·</Text>
+                  <TouchableOpacity onPress={() => Linking.openURL(TERMS_OF_SERVICE_URL)}>
+                    <Text style={styles.legalLink}>Terms of Service</Text>
+                  </TouchableOpacity>
+                </View>
               </>
             )}
           </View>
@@ -685,6 +706,24 @@ const styles = StyleSheet.create({
     color: "rgba(255,255,255,0.55)",
     textAlign: "center",
     lineHeight: 16,
+  },
+  legalLinks: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 2,
+  },
+  legalLink: {
+    fontFamily: "Nunito-SemiBold",
+    fontSize: 11,
+    color: "rgba(255,255,255,0.75)",
+    textDecorationLine: "underline",
+  },
+  legalLinkSep: {
+    fontFamily: "Nunito-Regular",
+    fontSize: 11,
+    color: "rgba(255,255,255,0.4)",
   },
 
   // Web dialog

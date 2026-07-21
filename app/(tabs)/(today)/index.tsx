@@ -11,7 +11,7 @@ import {
   UIManager,
 } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
-import { Plus, Check, Pill, SkipForward, Bell, Sparkles } from 'lucide-react-native';
+import { Plus, Check, Pill, SkipForward, Bell, Sparkles, Settings } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { COLORS, DARK_COLORS } from '@/constants/AppColors';
 import { AnimatedPressable } from '@/components/AnimatedPressable';
@@ -319,15 +319,33 @@ export default function TodayScreen() {
               boxShadow: '0 4px 16px rgba(212,96,122,0.25)',
             }}
           >
-            <Text style={{ fontFamily: 'Nunito-ExtraBold', fontSize: 22, color: '#FFFFFF', marginBottom: 4 }}>
-              {greeting}
-            </Text>
-            <Text style={{ fontFamily: 'Nunito-Regular', fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 20 }}>
-              Consistency is the key to your health journey. ✨
-            </Text>
-            <Text style={{ fontFamily: 'Nunito-Medium', fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 8 }}>
-              {dateLabel}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontFamily: 'Nunito-ExtraBold', fontSize: 22, color: '#FFFFFF', marginBottom: 4 }}>
+                  {greeting}
+                </Text>
+                <Text style={{ fontFamily: 'Nunito-Regular', fontSize: 14, color: 'rgba(255,255,255,0.85)', lineHeight: 20 }}>
+                  Consistency is the key to your health journey. ✨
+                </Text>
+                <Text style={{ fontFamily: 'Nunito-Medium', fontSize: 13, color: 'rgba(255,255,255,0.7)', marginTop: 8 }}>
+                  {dateLabel}
+                </Text>
+              </View>
+              <AnimatedPressable
+                onPress={() => router.push('/(tabs)/(today)/settings')}
+                style={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 17,
+                  backgroundColor: 'rgba(255,255,255,0.2)',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  marginLeft: 12,
+                }}
+              >
+                <Settings size={17} color="#FFFFFF" />
+              </AnimatedPressable>
+            </View>
           </View>
         </AnimatedListItem>
 

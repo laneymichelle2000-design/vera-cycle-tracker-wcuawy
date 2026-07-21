@@ -15,6 +15,7 @@ export default function TodayLayout() {
       }}
     >
       <Stack.Screen name="index" options={{ title: 'Today' }} />
+      <Stack.Screen name="settings" options={{ title: 'Settings', headerLargeTitle: false }} />
     </Stack>
   );
 }
