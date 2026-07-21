@@ -15,7 +15,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.veracycle.app",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserNotificationsUsageDescription": "Vera Cycle uses notifications to remind you when it's time to take your medicine or birth control."
       }
     },
     "android": {
@@ -40,7 +41,11 @@
         {
           "icon": "./assets/images/app-icon-gmt.png",
           "color": "#D4607A",
-          "sounds": []
+          "sounds": [],
+          "androidPermissions": ["POST_NOTIFICATIONS"],
+          "androidPermissionDescriptions": {
+            "POST_NOTIFICATIONS": "Vera Cycle uses notifications to remind you when it's time to take your medicine or birth control."
+          }
         }
       ]
     ],
