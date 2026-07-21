@@ -5,11 +5,13 @@ import {
   Text,
   ScrollView,
   useColorScheme,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Pill, CalendarDays, ClipboardList, Bell } from "lucide-react-native";
 import { COLORS, DARK_COLORS } from "@/constants/AppColors";
 import { AnimatedPressable } from "@/components/AnimatedPressable";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -49,6 +51,12 @@ export default function HomeScreen() {
       contentContainerStyle={styles.container}
       showsVerticalScrollIndicator={false}
     >
+      {/* Screen header row */}
+      <View style={styles.headerRow}>
+        <Text style={[styles.screenTitle, { color: C.text }]}>Home</Text>
+        <NotificationBell variant="compact" size={26} />
+      </View>
+
       {/* Hero */}
       <View style={[styles.hero, { backgroundColor: C.primaryMuted }]}>
         <Text style={[styles.heroEmoji]}>🌸</Text>
@@ -96,6 +104,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 60,
     paddingBottom: 120,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  screenTitle: {
+    fontSize: 28,
+    fontWeight: '800',
+    letterSpacing: -0.5,
   },
   hero: {
     borderRadius: 20,

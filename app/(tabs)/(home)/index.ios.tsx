@@ -5,11 +5,13 @@ import {
   Text,
   ScrollView,
   useColorScheme,
+  TouchableOpacity,
 } from "react-native";
 import { Stack, useRouter } from "expo-router";
 import { Pill, CalendarDays, ClipboardList, Bell } from "lucide-react-native";
 import { COLORS, DARK_COLORS } from "@/constants/AppColors";
 import { AnimatedPressable } from "@/components/AnimatedPressable";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -45,7 +47,13 @@ export default function HomeScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ title: "Vera Cycle", headerLargeTitle: true }} />
+      <Stack.Screen
+        options={{
+          title: "Vera Cycle",
+          headerLargeTitle: true,
+          headerRight: () => <NotificationBell variant="compact" size={26} />,
+        }}
+      />
       <ScrollView
         style={{ flex: 1, backgroundColor: C.background }}
         contentContainerStyle={styles.container}

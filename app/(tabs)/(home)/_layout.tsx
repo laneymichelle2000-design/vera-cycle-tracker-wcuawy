@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { Platform } from 'react-native';
 
 export default function HomeLayout() {
   return (
@@ -6,7 +7,7 @@ export default function HomeLayout() {
       <Stack.Screen
         name="index"
         options={{
-          headerShown: false,
+          headerShown: Platform.OS === 'ios',
         }}
       />
     </Stack>

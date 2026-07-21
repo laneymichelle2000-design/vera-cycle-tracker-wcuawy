@@ -16,7 +16,16 @@
       "bundleIdentifier": "com.veracycle.app",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSUserNotificationsUsageDescription": "Vera Cycle uses notifications to remind you when it's time to take your medicine or birth control."
+        "NSUserNotificationsUsageDescription": "Vera Cycle uses notifications to remind you when it's time to take your medicine or birth control.",
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
+      },
+      "entitlements": {
+        "aps-environment": "production",
+        "com.apple.security.application-groups": [
+          "group.com.veracycle.app.onesignal"
+        ]
       }
     },
     "android": {
@@ -32,6 +41,12 @@
       "bundler": "metro"
     },
     "plugins": [
+      [
+        "onesignal-expo-plugin",
+        {
+          "mode": "production"
+        }
+      ],
       "expo-font",
       "expo-router",
       "expo-web-browser",
@@ -56,7 +71,8 @@
       "typedRoutes": true
     },
     "extra": {
-      "router": {}
+      "router": {},
+      "oneSignalAppId": "96532269-7b3a-4209-b660-559075716bfc"
     }
   }
 }

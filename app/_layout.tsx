@@ -17,6 +17,7 @@ import { StatusBar } from "expo-status-bar";
 import * as Notifications from "expo-notifications";
 import { WidgetProvider } from "@/contexts/WidgetContext";
 import { SubscriptionProvider, useSubscription } from "@/contexts/SubscriptionContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { seedIfNeeded } from "@/utils/seedData";
 import { requestNotificationPermissions, rescheduleAllMedicines } from "@/utils/notifications";
@@ -141,7 +142,8 @@ export default function RootLayout() {
   if (!loaded || onboardingComplete === null) return null;
 
   return (
-    <SubscriptionProvider>
+    <NotificationProvider>
+      <SubscriptionProvider>
           <SubscriptionRedirect />
       <DevErrorBoundary>
       <StatusBar style="auto" animated />
@@ -174,6 +176,14 @@ export default function RootLayout() {
                     headerShown: false,
                   }}
                 />
+                <Stack.Screen
+                  name="notification-preferences"
+                  options={{
+                    title: 'Notifications',
+                    presentation: 'modal',
+                    headerShown: true,
+                  }}
+                />
               </Stack>
               <SystemBars style={"auto"} />
             </GestureHandlerRootView>
@@ -182,5 +192,6 @@ export default function RootLayout() {
       </ThemeProvider>
     </DevErrorBoundary>
     </SubscriptionProvider>
+    </NotificationProvider>
   );
 }
