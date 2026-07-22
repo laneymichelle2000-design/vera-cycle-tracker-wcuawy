@@ -46,13 +46,14 @@ export function NotificationBell({
 
   const handlePress = async () => {
     if (hasPermission) {
-      console.log('[NotificationBell] Bell pressed — navigating to notification preferences');
+      console.log('[NotificationBell] Bell pressed — navigating to notification-preferences');
       router.push("/notification-preferences");
       return;
     }
 
     if (permissionDenied) {
       console.log('[NotificationBell] Bell pressed — permission denied, prompting settings');
+      // Permission was denied - direct to settings
       Alert.alert(
         "Notifications Disabled",
         "To receive notifications, please enable them in your device settings.",
@@ -75,6 +76,7 @@ export function NotificationBell({
     }
 
     console.log('[NotificationBell] Bell pressed — requesting notification permission');
+    // Request permission
     await requestPermission();
   };
 

@@ -56,9 +56,7 @@ export default function NotificationPreferencesScreen() {
   );
 
   const handleEnableNotifications = async () => {
-    console.log('[NotificationPreferences] Enable notifications button pressed');
     if (permissionDenied) {
-      console.log('[NotificationPreferences] Permission previously denied — prompting settings');
       Alert.alert(
         "Notifications Disabled",
         "To receive notifications, please enable them in your device settings.",
@@ -67,7 +65,6 @@ export default function NotificationPreferencesScreen() {
           {
             text: "Open Settings",
             onPress: () => {
-              console.log('[NotificationPreferences] Opening device notification settings');
               if (Platform.OS === "ios") {
                 Linking.openURL("app-settings:");
               } else {
@@ -84,7 +81,6 @@ export default function NotificationPreferencesScreen() {
   };
 
   const handleCategoryToggle = (key: string, value: boolean) => {
-    console.log('[NotificationPreferences] Category toggled:', key, '->', value);
     setCategories((prev) => ({ ...prev, [key]: value }));
 
     if (value) {
